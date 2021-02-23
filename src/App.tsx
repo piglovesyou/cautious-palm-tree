@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList } from 'react-window';
@@ -52,6 +52,14 @@ const Styles = styled.div`
       :last-child {
         border-right: 0;
       }
+      
+      input {
+        font-size: 1rem;
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        border: 0;
+      }
     }
   }
 
@@ -60,15 +68,41 @@ const Styles = styled.div`
   }
   `;
 
-function Table({ columns, data }) {
-  // Use the state and functions returned from useTable to build your UI
 
-  const defaultColumn = React.useMemo(
-      () => ({
-        width: 150,
-      }),
-      []
-  );
+// Create an editable cell renderer
+const EditableCell = ({
+                        value: initialValue,
+                        row: { index },
+                        column: { id },
+                        updateMyData, // This is a custom function that we supplied to our table instance
+                      }) => {
+  // We need to keep and update the state of the cell normally
+  const [value, setValue] = React.useState(initialValue)
+
+  const onChange = e => {
+    setValue(e.target.value)
+  }
+
+  // We'll only update the external data when the input is blurred
+  const onBlur = () => {
+    updateMyData(index, id, value)
+  }
+
+  // If the initialValue is changed external, sync it up with our state
+  React.useEffect(() => {
+    setValue(initialValue)
+  }, [initialValue])
+
+  return <input value={value} onChange={onChange} onBlur={onBlur} />
+}
+
+// Set our editable cell renderer as the default Cell renderer
+const defaultColumn = {
+  Cell: EditableCell,
+  width: 150,
+}
+
+function Table({ columns, data, updateMyData }) {
 
   const scrollBarSize = React.useMemo(() => scrollbarWidth(), []);
 
@@ -79,11 +113,14 @@ function Table({ columns, data }) {
     rows,
     totalColumnsWidth,
     prepareRow,
-  } = useTable(
+  } = useTable<{updateMyData: any}>(
       {
         columns,
         data,
         defaultColumn,
+        // autoResetPage: !skipPageReset,
+        // @ts-ignore
+        updateMyData,
       },
       useBlockLayout
   );
@@ -199,10 +236,38 @@ function App() {
       []
   );
 
-  const data = React.useMemo(() => makeData(100000), []);
+  // const data = React.useMemo(() => makeData(100000), []);
+  const [data, setData] = React.useState(() => makeData(100000))
+  const [originalData] = React.useState(data)
+  // const [skipPageReset, setSkipPageReset] = React.useState(false)
+
+  const updateMyData = useCallback((rowIndex, columnId, value) => {
+    // We also turn on the flag to not reset the page
+    // setSkipPageReset(true)
+    setData(old =>
+        old.map((row, index) => {
+          if (index === rowIndex) {
+            return {
+              ...old[rowIndex],
+              [columnId]: value,
+            }
+          }
+          return row
+        })
+    )
+  }, []);
+
+  // React.useEffect(() => {
+  //   setSkipPageReset(false)
+  // }, [data])
+
+  const resetData = () => setData(originalData)
 
   return (
-      <Table columns={ columns } data={ data }/>
+      <Table columns={ columns } data={ data }
+             updateMyData={updateMyData}
+             // skipPageReset={skipPageReset}
+      />
   );
 }
 
