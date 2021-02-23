@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/cautious-palm-tree/precache-manifest.9aa88728873373df2560346038c29a27.js"
+  "/cautious-palm-tree/precache-manifest.e8b8525473001de52ee2a2bd6c99af91.js"
 );
 
 self.addEventListener('message', (event) => {
