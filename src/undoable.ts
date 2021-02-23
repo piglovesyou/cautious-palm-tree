@@ -31,13 +31,13 @@ export class Undoable<CellType> {
     return this.curr = this.curr.__proto__;
   }
   redo() {
-    if (this.pos >= this.max - 1) {
+    let nextPos = this.pos + 1;
+    const newData = this.hist[nextPos];
+    if (!newData) {
       window.alert(`Unable to redo. You're already in the edge of history.`)
       return this.curr;
     }
-    let nextPos = this.pos + 1;
-    const newData = this.hist[nextPos];
-    if (!newData) throw new Error('Never');
+    if(this.pos >= this.max - 1) throw new Error('Never')
     this.pos = nextPos;
     return this.curr = newData;
   }

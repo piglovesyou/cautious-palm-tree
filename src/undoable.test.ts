@@ -16,11 +16,16 @@ describe('undoable.ts', () => {
   });
 
   test('deeper', () => {
-    let alertMessage: string;
+    let alertMessage: string = '';
     jest.spyOn(window, 'alert').mockImplementation((m) => {alertMessage = m});
 
     const a0 = [{a: 'a'}, {a: 'a'}, {a: 'a'}];
     const u = new Undoable<{a: string}>(a0, 10);
+
+    expect(alertMessage).toStrictEqual('')
+    u.redo();
+    expect(alertMessage).toMatchSnapshot();
+    alertMessage = ''
 
     u.setNewValue(1, 'a', 'blaa1');
     u.setNewValue(0, 'a', 'blaa2');
@@ -33,7 +38,7 @@ describe('undoable.ts', () => {
     u.setNewValue(1, 'a', 'blaa9');
     u.setNewValue(1, 'a', 'blaa10');
 
-    expect(alertMessage!).toMatchSnapshot();
+    expect(alertMessage).toStrictEqual('')
     u.redo();
     expect(alertMessage!).toMatchSnapshot();
     alertMessage = ''

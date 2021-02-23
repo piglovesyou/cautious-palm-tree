@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`undoable.ts deeper 1`] = `undefined`;
+exports[`undoable.ts deeper 1`] = `"Unable to redo. You're already in the edge of history."`;
 
 exports[`undoable.ts deeper 2`] = `"Unable to redo. You're already in the edge of history."`;
 
