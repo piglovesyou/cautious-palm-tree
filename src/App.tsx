@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from 'react';
 import { FocusEvent } from "react";
 import styled from 'styled-components';
 import { useTable, useBlockLayout } from 'react-table';
@@ -6,6 +12,7 @@ import { FixedSizeList } from 'react-window';
 import scrollbarWidth from './scrollbarWidth';
 
 import makeData from './makeData';
+import { Undoable } from "./undoable";
 
 const Styles = styled.div`
 
@@ -200,8 +207,9 @@ function Table({ columns, data, updateMyData }) {
   );
 }
 
+
 function App() {
-  const columns = React.useMemo(
+  const columns = useMemo(
       () => [
         {
           Header: 'Row Index',
@@ -247,42 +255,20 @@ function App() {
       []
   );
 
-  const [ data, setData ] = React.useState(() => {
-    return makeData(100000);
-  });
+  const undoable = useMemo(() => new Undoable(makeData(100000), 10), []);
+  const [ data, setData ] = React.useState(undoable.getData());
 
   const updateMyData = (rowIndex, columnId, value) => {
-    setData(data => {
-          data[rowIndex][columnId] = value;
-          return data;
-        }
-        //   return old.map((row, index) => {
-        //     if (index === rowIndex) {
-        //       return {
-        //         ...old[rowIndex],
-        //         [columnId]: value,
-        //       };
-        //     }
-        //     return row;
-        //   });
-        // }
-    );
+    // debugger
+    setData(undoable.setNewValue(rowIndex, columnId, value));
   };
 
   useEffect(() => {
-    function undo() {
-
-    }
-
-    function redo() {
-
-    }
-
     window.addEventListener('keydown', e => {
       if (!e.metaKey) return;
       if (e.key !== 'z') return;
-      if (e.shiftKey) redo();
-      else undo();
+      if (e.shiftKey) setData(undoable.redo())
+      else setData(undoable.undo())
     });
   }, []);
 
