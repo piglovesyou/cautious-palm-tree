@@ -236,14 +236,9 @@ function App() {
       []
   );
 
-  // const data = React.useMemo(() => makeData(100000), []);
   const [data, setData] = React.useState(() => makeData(100000))
-  const [originalData] = React.useState(data)
-  // const [skipPageReset, setSkipPageReset] = React.useState(false)
 
   const updateMyData = useCallback((rowIndex, columnId, value) => {
-    // We also turn on the flag to not reset the page
-    // setSkipPageReset(true)
     setData(old =>
         old.map((row, index) => {
           if (index === rowIndex) {
@@ -257,16 +252,9 @@ function App() {
     )
   }, []);
 
-  // React.useEffect(() => {
-  //   setSkipPageReset(false)
-  // }, [data])
-
-  const resetData = () => setData(originalData)
-
   return (
       <Table columns={ columns } data={ data }
              updateMyData={updateMyData}
-             // skipPageReset={skipPageReset}
       />
   );
 }
