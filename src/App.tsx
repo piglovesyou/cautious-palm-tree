@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FocusEvent } from "react";
 import styled from 'styled-components';
 import { useTable, useBlockLayout } from 'react-table';
 import { FixedSizeList } from 'react-window';
@@ -76,31 +77,41 @@ const EditableCell = ({
                         column: { id },
                         updateMyData, // This is a custom function that we supplied to our table instance
                       }) => {
-  // We need to keep and update the state of the cell normally
-  const [value, setValue] = React.useState(initialValue)
+  const valueRef = useRef<string>('');
 
-  const onChange = e => {
-    setValue(e.target.value)
-  }
+  // We need to keep and update the state of the cell normally
+  // const [value, setValue] = React.useState(initialValue)
+
+  // const onChange = e => {
+  //   setValue(e.target.value)
+  // }
 
   // We'll only update the external data when the input is blurred
-  const onBlur = () => {
-    updateMyData(index, id, value)
-  }
+  const onBlur = useCallback((e: FocusEvent<HTMLInputElement>) => {
+    const { value } = e.currentTarget;
+    if (valueRef.current === value) return;
+    updateMyData(index, id, value);
+  }, []);
 
-  // If the initialValue is changed external, sync it up with our state
-  React.useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
+  const onFocus = useCallback((e: FocusEvent<HTMLInputElement>) => {
+    valueRef.current = e.currentTarget.value;
+  }, []);
 
-  return <input value={value} onChange={onChange} onBlur={onBlur} />
-}
+  // // If the initialValue is changed external, sync it up with our state
+  // React.useEffect(() => {
+  //   setValue(initialValue)
+  // }, [initialValue])
+
+  return <input defaultValue={ initialValue }
+                onFocus={ onFocus }
+                onBlur={ onBlur }/>;
+};
 
 // Set our editable cell renderer as the default Cell renderer
 const defaultColumn = {
   Cell: EditableCell,
   width: 150,
-}
+};
 
 function Table({ columns, data, updateMyData }) {
 
@@ -113,7 +124,7 @@ function Table({ columns, data, updateMyData }) {
     rows,
     totalColumnsWidth,
     prepareRow,
-  } = useTable<{updateMyData: any}>(
+  } = useTable<{ updateMyData: any }>(
       {
         columns,
         data,
@@ -139,7 +150,7 @@ function Table({ columns, data, updateMyData }) {
               { row.cells.map(cell => {
                 return (
                     <div { ...cell.getCellProps() } className="td">
-                      { cell.render('Cell') }
+                      { cell.render('Cell', { blaa: 'blaa' }) }
                     </div>
                 );
               }) }
@@ -149,11 +160,11 @@ function Table({ columns, data, updateMyData }) {
       [ prepareRow, rows ]
   );
 
-  const [wh, updateWh] = useState(400);
+  const [ wh, updateWh ] = useState(400);
   useEffect(() => {
-    const headerHeight = document.querySelector<HTMLDivElement>('.table > :not([role="rowgroup"])')!.offsetHeight
+    const headerHeight = document.querySelector<HTMLDivElement>('.table > :not([role="rowgroup"])')!.offsetHeight;
     updateWh(window.document.body.offsetHeight - headerHeight);
-  }, [])
+  }, []);
 
   // Render the UI for your table
   return (
@@ -236,25 +247,48 @@ function App() {
       []
   );
 
-  const [data, setData] = React.useState(() => makeData(100000))
+  const [ data, setData ] = React.useState(() => {
+    return makeData(100000);
+  });
 
-  const updateMyData = useCallback((rowIndex, columnId, value) => {
-    setData(old =>
-        old.map((row, index) => {
-          if (index === rowIndex) {
-            return {
-              ...old[rowIndex],
-              [columnId]: value,
-            }
-          }
-          return row
-        })
-    )
+  const updateMyData = (rowIndex, columnId, value) => {
+    setData(data => {
+          data[rowIndex][columnId] = value;
+          return data;
+        }
+        //   return old.map((row, index) => {
+        //     if (index === rowIndex) {
+        //       return {
+        //         ...old[rowIndex],
+        //         [columnId]: value,
+        //       };
+        //     }
+        //     return row;
+        //   });
+        // }
+    );
+  };
+
+  useEffect(() => {
+    function undo() {
+
+    }
+
+    function redo() {
+
+    }
+
+    window.addEventListener('keydown', e => {
+      if (!e.metaKey) return;
+      if (e.key !== 'z') return;
+      if (e.shiftKey) redo();
+      else undo();
+    });
   }, []);
 
   return (
       <Table columns={ columns } data={ data }
-             updateMyData={updateMyData}
+             updateMyData={ updateMyData }
       />
   );
 }
