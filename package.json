@@ -7,7 +7,7 @@
     "eject": "rescripts eject",
   "deploy": "gh-pages -d build"
   },
-  "homepage": "http://piglovesyou.github.io/cautious-palm-tree",
+  "homepage": "https://piglovesyou.github.io/cautious-palm-tree/",
   "dependencies": {
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.31",
