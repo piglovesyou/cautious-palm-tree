@@ -17,11 +17,12 @@ export class Undoable<CellType> {
       this.hist.shift();
     else
       this.pos = this.hist.length - 1
+    return this.curr;
   }
   undo() {
     if (this.pos <= 0) {
-      window.alert(`Undo's not available. You're already in the edge of history.`)
-      return;
+      window.alert(`Unable to undo. You're already in the edge of history.`)
+      return this.curr;
     }
     if (this.curr.__proto__ === Array.prototype) throw new Error('Never');
     let nextPos = this.pos - 1;
@@ -31,8 +32,8 @@ export class Undoable<CellType> {
   }
   redo() {
     if (this.pos >= this.max - 1) {
-      window.alert(`Redo's not available. You're already in the edge of history.`)
-      return;
+      window.alert(`Unable to redo. You're already in the edge of history.`)
+      return this.curr;
     }
     let nextPos = this.pos + 1;
     const newData = this.hist[nextPos];
@@ -41,7 +42,7 @@ export class Undoable<CellType> {
     return this.curr = newData;
   }
   getData() {
-    this.curr;
+    return this.curr;
   }
   toArray() {
     return this.curr.map(e => e);

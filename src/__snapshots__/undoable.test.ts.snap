@@ -2,7 +2,7 @@
 
 exports[`undoable.ts deeper 1`] = `undefined`;
 
-exports[`undoable.ts deeper 2`] = `"Redo's not available. You're already in the edge of history."`;
+exports[`undoable.ts deeper 2`] = `"Unable to redo. You're already in the edge of history."`;
 
 exports[`undoable.ts deeper 3`] = `
 Array [
@@ -18,7 +18,7 @@ Array [
 ]
 `;
 
-exports[`undoable.ts deeper 4`] = `"Undo's not available. You're already in the edge of history."`;
+exports[`undoable.ts deeper 4`] = `"Unable to undo. You're already in the edge of history."`;
 
 exports[`undoable.ts deeper 5`] = `
 Array [
@@ -34,7 +34,7 @@ Array [
 ]
 `;
 
-exports[`undoable.ts deeper 6`] = `"Redo's not available. You're already in the edge of history."`;
+exports[`undoable.ts deeper 6`] = `"Unable to redo. You're already in the edge of history."`;
 
 exports[`undoable.ts deeper 7`] = `
 Array [
