@@ -1,7 +1,7 @@
 import namor from 'namor'
 
 const range = len => {
-  const arr = []
+  const arr: number[] = []
   for (let i = 0; i < len; i++) {
     arr.push(i)
   }

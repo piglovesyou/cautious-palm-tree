@@ -7,18 +7,26 @@
     "eject": "rescripts eject"
   },
   "dependencies": {
+    "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.31",
+    "@types/react": "^17.0.2",
+    "@types/react-dom": "^17.0.1",
     "namor": "^1.1.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1",
     "react-table": "latest",
     "react-window": "^1.8.5",
-    "styled-components": "^4.3.2"
+    "styled-components": "^4.3.2",
+    "typescript": "^4.1.5"
   },
   "devDependencies": {
     "@rescripts/cli": "^0.0.11",
     "@rescripts/rescript-use-babel-config": "^0.0.8",
     "@rescripts/rescript-use-eslint-config": "^0.0.9",
+    "@types/react-table": "7.0.28",
+    "@types/react-window": "^1.8.2",
+    "@types/styled-components": "^4.4.3",
     "babel-eslint": "10.0.1",
     "eslint-config-prettier": "^6.15.0"
   },
