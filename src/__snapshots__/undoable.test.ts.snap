@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`undoable.ts deeper 1`] = `undefined`;
+
+exports[`undoable.ts deeper 2`] = `"Redo's not available. You're already in the edge of history."`;
+
+exports[`undoable.ts deeper 3`] = `
+Array [
+  Object {
+    "a": "blaa8",
+  },
+  Object {
+    "a": "blaa10",
+  },
+  Object {
+    "a": "blaa6",
+  },
+]
+`;
+
+exports[`undoable.ts deeper 4`] = `"Undo's not available. You're already in the edge of history."`;
+
+exports[`undoable.ts deeper 5`] = `
+Array [
+  Object {
+    "a": "a",
+  },
+  Object {
+    "a": "blaa1",
+  },
+  Object {
+    "a": "a",
+  },
+]
+`;
+
+exports[`undoable.ts deeper 6`] = `"Redo's not available. You're already in the edge of history."`;
+
+exports[`undoable.ts deeper 7`] = `
+Array [
+  Object {
+    "a": "blaa8",
+  },
+  Object {
+    "a": "blaa10",
+  },
+  Object {
+    "a": "blaa6",
+  },
+]
+`;
