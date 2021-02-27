@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/cautious-palm-tree/static/css/main.9513bf30.chunk.css",
-    "main.js": "/cautious-palm-tree/static/js/main.4d40e7de.chunk.js",
-    "main.js.map": "/cautious-palm-tree/static/js/main.4d40e7de.chunk.js.map",
+    "main.css": "/cautious-palm-tree/static/css/main.06d34bef.chunk.css",
+    "main.js": "/cautious-palm-tree/static/js/main.824f8c9e.chunk.js",
+    "main.js.map": "/cautious-palm-tree/static/js/main.824f8c9e.chunk.js.map",
     "runtime-main.js": "/cautious-palm-tree/static/js/runtime-main.9acffce1.js",
     "runtime-main.js.map": "/cautious-palm-tree/static/js/runtime-main.9acffce1.js.map",
     "static/js/2.74f0ce7a.chunk.js": "/cautious-palm-tree/static/js/2.74f0ce7a.chunk.js",
     "static/js/2.74f0ce7a.chunk.js.map": "/cautious-palm-tree/static/js/2.74f0ce7a.chunk.js.map",
     "index.html": "/cautious-palm-tree/index.html",
-    "static/css/main.9513bf30.chunk.css.map": "/cautious-palm-tree/static/css/main.9513bf30.chunk.css.map",
+    "static/css/main.06d34bef.chunk.css.map": "/cautious-palm-tree/static/css/main.06d34bef.chunk.css.map",
     "static/js/2.74f0ce7a.chunk.js.LICENSE.txt": "/cautious-palm-tree/static/js/2.74f0ce7a.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.9acffce1.js",
     "static/js/2.74f0ce7a.chunk.js",
-    "static/css/main.9513bf30.chunk.css",
-    "static/js/main.4d40e7de.chunk.js"
+    "static/css/main.06d34bef.chunk.css",
+    "static/js/main.824f8c9e.chunk.js"
   ]
 }
