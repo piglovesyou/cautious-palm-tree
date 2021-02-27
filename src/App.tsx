@@ -1,282 +1,207 @@
 import React, {
+  PureComponent,
   useCallback,
   useEffect,
   useMemo,
   useRef,
-  useState
-} from 'react';
-import { FocusEvent } from "react";
-import styled from 'styled-components';
-import { useTable, useBlockLayout } from 'react-table';
-import { FixedSizeList } from 'react-window';
-import scrollbarWidth from './scrollbarWidth';
+  useState,
+} from 'react'
+import { FocusEvent } from 'react'
+import { FixedSizeList, ListChildComponentProps } from 'react-window'
+import debounce from 'lodash.debounce'
 
-import makeData from './makeData';
-import { Undoable } from "./undoable";
+import makeData from './makeData'
+import { Undoable } from './undoable'
 
-const Styles = styled.div`
-
-  /* This is required to make the table full-width */
-  display: block;
-  max-width: 100%;
-
-  /* This will make the table scrollable when it gets too small */
-  .tableWrap {
-    display: block;
-    max-width: 100%;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    /* border-bottom: 1px solid black; */
-  }
-
-  .table {
-    /* Make sure the inner table is always as wide as needed */
-    width: 100%;
-    border-spacing: 0;
-
-    .tr {
-      :last-child {
-        td {
-          border-bottom: 0;
-        }
-      }
-    }
-
-    .th,
-    .td {
-      margin: 0;
-      padding: 0.5rem;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-
-      /* The secret sauce */
-      /* Each cell should grow equally */
-      width: 1%;
-      /* But "collapsed" cells should be as small as possible */
-      &.collapse {
-        width: 0.0000000001%;
-      }
-
-      :last-child {
-        border-right: 0;
-      }
-      
-      input {
-        font-size: 1rem;
-        max-width: 100%;
-        padding: 0;
-        margin: 0;
-        border: 0;
-      }
-    }
-  }
-
-  .pagination {
-    padding: 0.5rem;
-  }
-  `;
-
-
-// Create an editable cell renderer
 const EditableCell = ({
-                        value: initialValue,
-                        row: { index },
-                        column: { id },
-                        updateMyData, // This is a custom function that we supplied to our table instance
-                      }) => {
-  const valueRef = useRef<string>('');
+  value: initialValue,
+  rowIndex,
+  columnAccessor,
+  updateMyData,
+}) => {
+  const valueRef = useRef<string>('')
 
-  // We need to keep and update the state of the cell normally
-  // const [value, setValue] = React.useState(initialValue)
-
-  // const onChange = e => {
-  //   setValue(e.target.value)
-  // }
-
-  // We'll only update the external data when the input is blurred
   const onBlur = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    const { value } = e.currentTarget;
-    if (valueRef.current === value) return;
-    updateMyData(index, id, value);
-  }, []);
+    const { value } = e.currentTarget
+    if (valueRef.current === value) return
+    updateMyData(rowIndex, columnAccessor, value)
+  }, [])
 
   const onFocus = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    valueRef.current = e.currentTarget.value;
-  }, []);
+    valueRef.current = e.currentTarget.value
+  }, [])
 
-  // // If the initialValue is changed external, sync it up with our state
-  // React.useEffect(() => {
-  //   setValue(initialValue)
-  // }, [initialValue])
-
-  return <input defaultValue={ initialValue }
-                onFocus={ onFocus }
-                onBlur={ onBlur }/>;
-};
-
-// Set our editable cell renderer as the default Cell renderer
-const defaultColumn = {
-  Cell: EditableCell,
-  width: 150,
-};
-
-function Table({ columns, data, updateMyData }) {
-
-  const scrollBarSize = React.useMemo(() => scrollbarWidth(), []);
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    totalColumnsWidth,
-    prepareRow,
-  } = useTable<{ updateMyData: any }>(
-      {
-        columns,
-        data,
-        defaultColumn,
-        // autoResetPage: !skipPageReset,
-        // @ts-ignore
-        updateMyData,
-      },
-      useBlockLayout
-  );
-
-  const RenderRow = React.useCallback(
-      ({ index, style }) => {
-        const row = rows[index];
-        prepareRow(row);
-        return (
-            <div
-                { ...row.getRowProps({
-                  style,
-                }) }
-                className="tr"
-            >
-              { row.cells.map(cell => {
-                return (
-                    <div { ...cell.getCellProps() } className="td">
-                      { cell.render('Cell', { blaa: 'blaa' }) }
-                    </div>
-                );
-              }) }
-            </div>
-        );
-      },
-      [ prepareRow, rows ]
-  );
-
-  const [ wh, updateWh ] = useState(400);
-  useEffect(() => {
-    const headerHeight = document.querySelector<HTMLDivElement>('.table > :not([role="rowgroup"])')!.offsetHeight;
-    updateWh(window.document.body.offsetHeight - headerHeight);
-  }, []);
-
-  // Render the UI for your table
-  return (
-
-      <Styles>
-        <div className="tableWrap">
-          <div { ...getTableProps() } className="table">
-            <div>
-              { headerGroups.map(headerGroup => (
-                  <div { ...headerGroup.getHeaderGroupProps() } className="tr">
-                    { headerGroup.headers.map(column => (
-                        <div { ...column.getHeaderProps() } className="th">
-                          { column.render('Header') }
-                        </div>
-                    )) }
-                  </div>
-              )) }
-            </div>
-
-            <div { ...getTableBodyProps() }>
-              <FixedSizeList
-                  height={ wh }
-                  itemCount={ rows.length }
-                  itemSize={ 35 }
-                  width={ totalColumnsWidth + scrollBarSize }
-              >
-                { RenderRow }
-              </FixedSizeList>
-            </div>
-          </div>
-        </div>
-      </Styles>
-  );
+  return <input defaultValue={initialValue} onFocus={onFocus} onBlur={onBlur} />
 }
 
+class ItemRenderer extends PureComponent<ListChildComponentProps> {
+  render() {
+    const {
+      data: { columns, data, updateMyData },
+      index: rowIndex,
+      style: rowStyle,
+    } = this.props
+
+    const row = data[rowIndex]
+    const rowKey = `row_${rowIndex}`
+
+    return (
+      <div style={rowStyle} className="tr" role="row">
+        {columns.map((column) => {
+          const { accessor, width, Header } = column
+          if (typeof accessor === 'function') {
+            return (
+              <div className="td" role="cell" key={Header}>
+                {accessor(row, rowIndex)}
+              </div>
+            )
+          }
+          const value = row[accessor]
+          const style = width ? { width } : undefined
+
+          // This is the trick to force rerender the DOM.
+          // In production, the modifiable factor could be timestamp.
+          const key = `${rowKey}-${Header}--${value}`
+
+          return (
+            <div key={key} className="td" style={style} role="cell">
+              <EditableCell
+                value={value}
+                columnAccessor={accessor}
+                rowIndex={rowIndex}
+                updateMyData={updateMyData}
+              />
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+}
+
+type Size = [number, number]
+
+function getTableBodySize(): Size {
+  const viewport = document.querySelector<HTMLDivElement>('#root')!
+  const tableBody = document.querySelector<HTMLDivElement>('.tableBody')!
+  return [viewport.offsetWidth, viewport.offsetHeight - tableBody.getBoundingClientRect().top]
+}
+
+function Table({ columns, data, updateMyData }) {
+  const [[w, h], updateSize] = useState([2000, 2000])
+
+  useEffect(() => {
+    window.addEventListener(
+      'resize',
+      debounce(() => {
+        updateSize(getTableBodySize())
+      }, 200)
+    )
+    updateSize(getTableBodySize())
+  }, [])
+
+  return (
+    <div className="tableWrap">
+      <div className="table">
+        <div className="tr" role="row">
+          {columns.map(({ Header, accessor, width }) => {
+            const style = width ? { width } : undefined
+            return (
+              <div key={accessor} className="th" style={style} role="cell">
+                {Header}
+              </div>
+            )
+          })}
+        </div>
+
+        <FixedSizeList
+          className="tableBody"
+          width={w}
+          height={h}
+          itemCount={data.length}
+          itemSize={35}
+          itemData={{ columns, data, updateMyData }}
+        >
+          {ItemRenderer}
+        </FixedSizeList>
+      </div>
+    </div>
+  )
+}
 
 function App() {
   const columns = useMemo(
-      () => [
-        {
-          Header: 'Row Index',
-          accessor: (row, i) => i,
-        },
-        {
-          Header: 'Name',
-          columns: [
-            {
-              Header: 'First Name',
-              accessor: 'firstName',
-            },
-            {
-              Header: 'Last Name',
-              accessor: 'lastName',
-            },
-          ],
-        },
-        {
-          Header: 'Info',
-          columns: [
-            {
-              Header: 'Age',
-              accessor: 'age',
-              width: 50,
-            },
-            {
-              Header: 'Visits',
-              accessor: 'visits',
-              width: 60,
-            },
-            {
-              Header: 'Status',
-              accessor: 'status',
-            },
-            {
-              Header: 'Profile Progress',
-              accessor: 'progress',
-            },
-          ],
-        },
-      ],
-      []
-  );
+    () => [
+      {
+        Header: 'Row Index',
+        accessor: (row, i) => i,
+      },
+      {
+        Header: 'First Name',
+        accessor: 'firstName',
+      },
+      {
+        Header: 'Last Name',
+        accessor: 'lastName',
+      },
+      {
+        Header: 'Age',
+        accessor: 'age',
+        width: 50,
+      },
+      {
+        Header: 'Visits',
+        accessor: 'visits',
+        width: 60,
+      },
+      {
+        Header: 'Status',
+        accessor: 'status',
+      },
+      {
+        Header: 'Profile Progress',
+        accessor: 'progress',
+      },
+    ],
+    []
+  )
 
-  const undoable = useMemo(() => new Undoable(makeData(100000), 10), []);
-  const [ data, setData ] = React.useState(undoable.getData());
+  const undoable = useMemo(() => new Undoable(makeData(100000), 10), [])
+  const [data, setData] = React.useState(undoable.getData())
 
   const updateMyData = (rowIndex, columnId, value) => {
-    // debugger
-    setData(undoable.setNewValue(rowIndex, columnId, value));
-  };
+    setData(undoable.setNewValue(rowIndex, columnId, value).toArray())
+  }
 
   useEffect(() => {
-    window.addEventListener('keydown', e => {
-      if (!e.metaKey) return;
-      if (e.key !== 'z') return;
-      if (e.shiftKey) setData(undoable.redo())
-      else setData(undoable.undo())
-    });
-  }, []);
+    window.addEventListener('keydown', (e) => {
+      if (!e.metaKey) return
+      if (e.key !== 'z') return
+      if (e.shiftKey) setData(undoable.redo().toArray())
+      else setData(undoable.undo().toArray())
+      e.preventDefault()
+    })
+  }, [])
 
   return (
-      <Table columns={ columns } data={ data }
-             updateMyData={ updateMyData }
-      />
-  );
+    <>
+      <div className="toolbar">
+        <div>The cells are editable. Hit <code>meta+z/meta+shift/z</code> to undo/redo. Note it saves the value on blur. View source on <a href="https://github.com/piglovesyou/cautious-palm-tree">GitHub</a>.</div>
+        <button
+          className="button1"
+          onClick={() => {
+            for (const r of document.querySelectorAll<HTMLDivElement>(
+              '[role="cell"]'
+            )!)
+              r.style.backgroundColor = 'lightblue'
+          }}
+        >
+          Paint cells to check what was re-render
+        </button>
+      </div>
+      <Table columns={columns} data={data} updateMyData={updateMyData} />
+    </>
+  )
 }
 
-export default App;
+export default App

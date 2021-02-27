@@ -9,7 +9,6 @@
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
@@ -17,9 +16,11 @@
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "noImplicitAny": false,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "preserve"
+    "jsx": "react-jsx",
+    "downlevelIteration": true
   },
   "include": [
     "src"

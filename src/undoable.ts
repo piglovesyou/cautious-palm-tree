@@ -1,50 +1,50 @@
-export class Undoable<CellType> {
-  curr;
+export class Undoable<RowType extends Record<string, any>> {
+  data: RowType[]
   max: number
-  hist: CellType[][] = [];
-  pos: number = 0;
+  hist: any[] = []
+  pos: number = -1
+
   constructor(data, max) {
-    this.hist.push(this.curr = data);
+    this.data = Array.from(data) // capture the array to prevent destruction from outside
     this.max = max
   }
   setNewValue(rowIndex, columnId, value) {
-    const data = this.curr = Object.create(this.curr);
-    const cellData = data[rowIndex] = Object.create(data[rowIndex]);
-    cellData[columnId] = value;
+    const oldRowData = this.data[rowIndex]
+    if (!oldRowData) throw new Error('Never')
+    const newRowData = Object.create(oldRowData)
+    newRowData[columnId] = value
+    this.data[rowIndex] = newRowData
+    this.hist.push([rowIndex, newRowData])
 
-    this.hist.push(data);
-    if (this.hist.length > this.max)
-      this.hist.shift();
-    else
-      this.pos = this.hist.length - 1
-    return this.curr;
+    if (this.hist.length > this.max) this.hist.shift()
+    else this.pos = this.hist.length - 1
+    return this
   }
   undo() {
-    if (this.pos <= 0) {
+    if (this.pos < 0) {
       window.alert(`Unable to undo. You're already in the edge of history.`)
-      return this.curr;
+      return this
     }
-    if (this.curr.__proto__ === Array.prototype) throw new Error('Never');
-    let nextPos = this.pos - 1;
-    if (this.hist[nextPos] !== this.curr.__proto__) throw new Error('Never');
-    this.pos = nextPos;
-    return this.curr = this.curr.__proto__;
+    const [rowIndex, currRowRef] = this.hist[this.pos]
+    this.data[rowIndex] = currRowRef.__proto__
+    this.pos--
+    return this
   }
   redo() {
-    let nextPos = this.pos + 1;
-    const newData = this.hist[nextPos];
-    if (!newData) {
+    if (!this.hist[this.pos + 1]) {
       window.alert(`Unable to redo. You're already in the edge of history.`)
-      return this.curr;
+      return this
     }
-    if(this.pos >= this.max - 1) throw new Error('Never')
-    this.pos = nextPos;
-    return this.curr = newData;
+    if (this.pos + 1 >= this.max) throw new Error('Never')
+    const [rowIndex, newRowRef] = this.hist[this.pos + 1]
+    this.data[rowIndex] = newRowRef
+    this.pos++
+    return this
   }
   getData() {
-    return this.curr;
+    return this.data
   }
   toArray() {
-    return this.curr.map(e => e);
+    return this.data.map((e) => e)
   }
 }

@@ -1,12 +1,13 @@
-# A rough JavaScript Undo/Redo example in React Table
+# Example of Editable Grid with Undo/Redo feature
 
-Visit: https://piglovesyou.github.io/cautious-palm-tree/
+Visit https://piglovesyou.github.io/cautious-palm-tree/ to see the working example.
 
 #### Features
 
-* Able to undo/redo by `meta+z` and `meta+shift+z` (Watch out for Windows users)
 * Editable cells
-* Infinite scroll
+* Able to undo/redo by `meta+z` and `meta+shift+z` (Watch out for Windows users)
+* Works fine with 100k rows, thanks to react-window
+* Infinite scroll without pagination
 * Full sized table
 
 #### My idea to implement Undo/Redo
@@ -22,6 +23,11 @@ My idea is to use JavaScript's `prototype` as layers of diffs, just like Git com
 * We just can wrap old object by a new one through `var newRef = Object.create(oldRef)`
 * Reference to `newRef.__proto__` to get the previous state
 * Prototype chain resolves all the actual values. It should be relatively fast, especially if it's limited depth. 50 would be enough for users?
+
+#### Performance
+
+* PureComponent protects cells to be re-rendered. It only redraws when the value changes.
+* Make inputs [uncontrolled](https://reactjs.org/docs/forms.html#controlled-components). It manages a single data array and no more unnecessary states. 
 
 # License
 

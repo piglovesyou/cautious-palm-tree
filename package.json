@@ -1,37 +1,40 @@
 {
   "private": true,
-  "scripts": {
-    "start": "rescripts start",
-    "build": "rescripts build",
-    "test": "rescripts test",
-    "eject": "rescripts eject",
-  "deploy": "gh-pages -d build"
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "@types/jest": "^26.0.15",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "lodash.debounce": "^4.0.8",
+    "namor": "^2.0.2",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-scripts": "4.0.3",
+    "react-window": "^1.8.6",
+    "typescript": "^4.1.2",
+    "web-vitals": "^1.0.1"
   },
   "homepage": "https://piglovesyou.github.io/cautious-palm-tree/",
-  "dependencies": {
-    "@types/jest": "^26.0.20",
-    "@types/node": "^14.14.31",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.1",
-    "gh-pages": "^3.1.0",
-    "namor": "^1.1.2",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1",
-    "react-table": "latest",
-    "react-window": "^1.8.5",
-    "styled-components": "^4.3.2",
-    "typescript": "^4.1.5"
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "fix": "prettier --write src/**/*.{ts,tsx,css}",
+    "deploy": "gh-pages -d build"
   },
-  "devDependencies": {
-    "@rescripts/cli": "^0.0.11",
-    "@rescripts/rescript-use-babel-config": "^0.0.8",
-    "@rescripts/rescript-use-eslint-config": "^0.0.9",
-    "@types/react-table": "7.0.28",
-    "@types/react-window": "^1.8.2",
-    "@types/styled-components": "^4.4.3",
-    "babel-eslint": "10.0.1",
-    "eslint-config-prettier": "^6.15.0"
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
   },
   "browserslist": {
     "production": [
@@ -44,5 +47,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/lodash.debounce": "^4.0.6",
+    "@types/react-window": "^1.8.2",
+    "@types/testing-library__jest-dom": "^5.9.5",
+    "gh-pages": "^3.1.0",
+    "prettier": "^2.2.1"
   }
 }
